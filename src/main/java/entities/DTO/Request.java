@@ -3,6 +3,7 @@ package entities.DTO;
 import java.io.Serializable;
 import java.util.List;
 
+import entities.Car;
 import entities.Client;
 import entities.Product;
 import entities.Quote;
@@ -12,36 +13,71 @@ public class Request implements Serializable {
 	
 	private Client client;
 	private Quote quote;
+	private long userId;
+	private Car car;
 	private List<Product> products;
 	
 	public Request() {
 	}
 	
-	public Request(Client client, Quote quote, List<Product> products) {
+	public Request(Client client, Quote quote, long userId, Car car, List<Product> products) {
+		super();
 		this.client = client;
 		this.quote = quote;
+		this.userId = userId;
+		this.car = car;
 		this.products = products;
 	}
 
 	public Client getClient() {
 		return client;
 	}
-	
+
+	public void setClient(Client client) {
+		this.client = client;
+	}
+
 	public Quote getQuote() {
 		return quote;
 	}
-	
+
+	public void setQuote(Quote quote) {
+		this.quote = quote;
+	}
+
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+
+	public Car getCar() {
+		return car;
+	}
+
+	public void setCar(Car car) {
+		this.car = car;
+	}
+
 	public List<Product> getProducts() {
 		return products;
+	}
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((car == null) ? 0 : car.hashCode());
 		result = prime * result + ((client == null) ? 0 : client.hashCode());
 		result = prime * result + ((products == null) ? 0 : products.hashCode());
 		result = prime * result + ((quote == null) ? 0 : quote.hashCode());
+		result = prime * result + (int) (userId ^ (userId >>> 32));
 		return result;
 	}
 
@@ -54,6 +90,11 @@ public class Request implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Request other = (Request) obj;
+		if (car == null) {
+			if (other.car != null)
+				return false;
+		} else if (!car.equals(other.car))
+			return false;
 		if (client == null) {
 			if (other.client != null)
 				return false;
@@ -69,11 +110,13 @@ public class Request implements Serializable {
 				return false;
 		} else if (!quote.equals(other.quote))
 			return false;
+		if (userId != other.userId)
+			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Request [client=" + client + ", quote=" + quote + ", products=" + products + "]";
+		return "Request [client=" + client + ", quote=" + quote + ", userId=" + userId + ", car=" + car + ", products=" + products + "]";
 	}
 }

@@ -23,14 +23,13 @@ public class ChargeRate implements Serializable {
 	private static final long serialVersionUID = -749229385033781297L;
 	
 	private int chargeRateId;
-	private int chargeRate;
+	private double chargeRate;
 	private List<Car> cars;
 	
 	public ChargeRate() {
 	}
 
-	public ChargeRate(int chargeRateId, int chargeRate) {
-		this.chargeRateId = chargeRateId;
+	public ChargeRate(double chargeRate) {
 		this.chargeRate = chargeRate;
 	}
 
@@ -46,11 +45,11 @@ public class ChargeRate implements Serializable {
 	}
 
 	@Column(name = "CHARGE_RATE")
-	public int getChargeRate() {
+	public double getChargeRate() {
 		return chargeRate;
 	}
 
-	public void setChargeRate(int chargeRate) {
+	public void setChargeRate(double chargeRate) {
 		this.chargeRate = chargeRate;
 	}
 
@@ -67,7 +66,10 @@ public class ChargeRate implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + chargeRate;
+		result = prime * result + ((cars == null) ? 0 : cars.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(chargeRate);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + chargeRateId;
 		return result;
 	}
@@ -81,7 +83,12 @@ public class ChargeRate implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ChargeRate other = (ChargeRate) obj;
-		if (chargeRate != other.chargeRate)
+		if (cars == null) {
+			if (other.cars != null)
+				return false;
+		} else if (!cars.equals(other.cars))
+			return false;
+		if (Double.doubleToLongBits(chargeRate) != Double.doubleToLongBits(other.chargeRate))
 			return false;
 		if (chargeRateId != other.chargeRateId)
 			return false;

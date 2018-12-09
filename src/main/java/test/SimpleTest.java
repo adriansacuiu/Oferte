@@ -1,18 +1,9 @@
 package test;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.apache.poi.xddf.usermodel.text.XDDFTextBody;
-import org.apache.poi.xddf.usermodel.text.XDDFTextRun;
-import org.apache.poi.xslf.usermodel.XMLSlideShow;
-import org.apache.poi.xslf.usermodel.XSLFShape;
-import org.apache.poi.xslf.usermodel.XSLFTextShape;
-
+import entities.Car;
+import entities.ChargeRate;
 import entities.Client;
 import entities.DTO.Request;
 import services.ppt.DataAppender;
@@ -25,8 +16,14 @@ public class SimpleTest {
 		String outputFileName = "target/ppt/output.pptx";
 		
         DataAppender dataAppender = new DataAppender(inputFileName, outputFileName); 
-        Client client = new Client("Siemens SRL", "Cristi", "Șova", "+40 754 432 245", "cristisova@yahoo.com", "");
-        Request request = new Request(client, null, null);
+        Client client = new Client("Siemens SRL", "Andrei", "Gheorge", "+40 754 432 245", "andreigheorghe@yahoo.com", "");
+       
+        Car car = new Car("Volkswage", "E-Golf", "https://ev-database.uk/car/1087/Volkswagen-e-Golf#charge-table");
+        List<ChargeRate> chargeRates = new ArrayList<ChargeRate>(2);
+        chargeRates.add(new ChargeRate(7.2));
+        car.setChargeRates(chargeRates);
+        
+        Request request = new Request(client, null, 0, car, null);
         
         dataAppender.processPPT(request);
 	}

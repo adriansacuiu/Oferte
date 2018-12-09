@@ -8,13 +8,16 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.poi.xddf.usermodel.text.XDDFTextBody;
+import org.apache.poi.xddf.usermodel.text.XDDFTextParagraph;
 import org.apache.poi.xddf.usermodel.text.XDDFTextRun;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFShape;
 import org.apache.poi.xslf.usermodel.XSLFTextShape;
 
+import entities.Car;
 import entities.Client;
 import entities.DTO.Request;
+import util.CarUtils;
 
 public class DataAppender {
 	
@@ -83,7 +86,8 @@ public class DataAppender {
 		getInput();
 		
 		////////
-		processFirstPage(request.getClient());
+		processWelcomePage(request.getClient());
+		proccesChargingRecomandationsPage(request.getCar(), 2);
 		////////
 		
 		closeAndWriteToPPT();
@@ -92,17 +96,53 @@ public class DataAppender {
 	/**
 	 * Replaces the placeholders in the first page with the client's information.
 	 */
-	public void processFirstPage(Client client)
+	public void processWelcomePage(Client client)
 	{
-        String clientCompanyName = client.getCompanyName();
-        String clientName = client.getFirstName() + " " + client.getLastName();
-        String clientPhone = client.getPhone();
-        String clientEmail = client.getEmail();
-        
         List<XSLFShape> shapes = ppt.getSlides().get(0).getShapes();
-        XSLFTextShape clientInfo = (XSLFTextShape) shapes.get(2);
-        XDDFTextBody clientInfoBody = clientInfo.getTextBody();
-		clientInfoBody = appendClientInfo(clientCompanyName, clientName, clientPhone, clientEmail, clientInfoBody);
+        XDDFTextBody clientInfoBody = ((XSLFTextShape) shapes.get(2)).getTextBody();
+        
+        String clientName = client.getFirstName() + " " + client.getLastName();
+        
+		clientInfoBody = appendClientInfo(client.getCompanyName(), clientName, client.getPhone(), client.getEmail(), clientInfoBody);
+		
+		System.out.println("Welcome page finished...");
+	}
+	
+	public void proccesChargingRecomandationsPage (Car car, int pageNumber)
+	{
+		List<XSLFShape> shapes = ppt.getSlides().get(pageNumber).getShapes();
+		List<XDDFTextParagraph> paragraphs = ((XSLFTextShape)shapes.get(0)).getTextBody().getParagraphs();
+		double chargeRate = car.getChargeRates().get(0).getChargeRate();
+		
+		for(XDDFTextParagraph paragraph : paragraphs){
+			for(XDDFTextRun textRun : paragraph.getTextRuns())
+			{
+				String text = textRun.getText().trim().toLowerCase();
+				switch (text) {
+				
+				case "placeholder_masina":
+					textRun.setText(car.getBrand() + " " + car.getModel() + " ");
+					break;
+					
+				case "placeholder_putere":
+					textRun.setText(String.valueOf(chargeRate) + " ");
+					break;	
+					
+				case "placeholder_putere2":
+					textRun.setText(String.valueOf(CarUtils.getOptimalChargeRate(chargeRate)));
+					break;	
+				
+				case "placeholder_sursa":
+					textRun.setText(" " + car.getLink());
+					break;	
+					
+				default:
+					break;
+				}
+			}
+		}
+		
+		System.out.println("Charging recomandations page finished...");
 	}
 
 	/**

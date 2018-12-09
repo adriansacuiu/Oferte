@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS `oferte`.`Cars` (
   `ID_CAR` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `BRAND` VARCHAR(225) NULL,
   `MODEL` VARCHAR(225) NULL,
+  `LINK` VARCHAR(225) NULL,
   PRIMARY KEY (`ID_CAR`))
 ENGINE = InnoDB;
 
@@ -147,15 +148,15 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `oferte`.`Carge_Rates` (
   `ID_CHARGE_RATE` INT NOT NULL AUTO_INCREMENT,
-  `CHARGE_RATE` INT NULL,
+  `CHARGE_RATE` DOUBLE(2,2) NULL,
   PRIMARY KEY (`ID_CHARGE_RATE`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `oferte`.`CAR_CHARGE_RATES`
+-- Table `oferte`.`Car_Charge_Rates`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `oferte`.`CAR_CHARGE_RATES` (
+CREATE TABLE IF NOT EXISTS `oferte`.`Car_Charge_Rates` (
   `ID_CAR` BIGINT(20) NOT NULL,
   `ID_CHARGE_RATE` INT NOT NULL,
   INDEX `ID_CAR_idx` (`ID_CAR` ASC),

@@ -38,8 +38,7 @@ public class Datatracking implements Serializable {
 	public Datatracking() {
 	}
 
-	public Datatracking(long datatrackingId, String targetTable, long targetId, String actionType, String description, long madeBy) {
-		this.datatrackingId = datatrackingId;
+	public Datatracking(String targetTable, long targetId, String actionType, String description, long madeBy) {
 		this.targetTable = targetTable;
 		this.targetId = targetId;
 		this.actionType = actionType;
