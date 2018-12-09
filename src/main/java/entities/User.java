@@ -1,19 +1,16 @@
 package entities;
 
-import javax.persistence.Id;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Entity;
-import javax.persistence.GenerationType;
+import java.io.Serializable;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.hibernate.annotations.NamedQueries;
 import org.hibernate.annotations.NamedQuery;
-
-import java.io.Serializable;
 
 @Entity
 @NamedQueries({
@@ -21,16 +18,15 @@ import java.io.Serializable;
 	@NamedQuery(name="getUserByUsername", query="FROM User u WHERE u.username = :username"),
 	@NamedQuery(name="getUsersByFirstName", query="FROM User u WHERE u.firstName = :firstName"),
 	@NamedQuery(name="getUsersByLastName", query="FROM User u WHERE u.lastName = :lastName"),
-	@NamedQuery(name="getUsersByPassword", query="FROM User u WHERE u.password = :password"),
 	@NamedQuery(name="getUserByEmail", query="FROM User u WHERE u.email = :email"),
-	@NamedQuery(name="getUsersByRole", query="FROM User u WHERE u.role = :role"),
-	@NamedQuery(name="getUserByDepartment", query="FROM User u WHERE u.department.idDepartment = :idDepartment")
+	@NamedQuery(name="getUsersByRole", query="FROM User u WHERE u.role = :role")
 })
-@Table(name = "USERS")
-public class User implements Serializable{
-	private static final long serialVersionUID = 1L;
-
-	private Long idUser;
+@Table(name = "Users")
+public class User implements Serializable {
+	
+	private static final long serialVersionUID = -7219798117947762502L;
+	
+	private Long userId;
 	private String username;
 	private String firstName;
 	private String lastName;
@@ -38,17 +34,27 @@ public class User implements Serializable{
 	private String email;
 	private String role;
 
-	private Department department;
+	public User() {
+	}
+
+	public User(String username, String firstName, String lastName, String password, String email, String role) {
+		this.username = username;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.password = password;
+		this.email = email;
+		this.role = role;
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID_USER")
-	public Long getIdUser() {
-		return idUser;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setIdUser(Long idUser) {
-		this.idUser = idUser;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	@Column(name = "USERNAME")
@@ -105,24 +111,13 @@ public class User implements Serializable{
 		this.role = role;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = "ID_DEPARTMENT")
-	@JsonIgnore
-	public Department getDepartment() {
-		return department;
-	}
-
-	public void setDepartment(Department department) {
-		this.department = department;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-		result = prime * result + ((idUser == null) ? 0 : idUser.hashCode());
+		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + ((role == null) ? 0 : role.hashCode());
@@ -149,10 +144,10 @@ public class User implements Serializable{
 				return false;
 		} else if (!firstName.equals(other.firstName))
 			return false;
-		if (idUser == null) {
-			if (other.idUser != null)
+		if (userId == null) {
+			if (other.userId != null)
 				return false;
-		} else if (!idUser.equals(other.idUser))
+		} else if (!userId.equals(other.userId))
 			return false;
 		if (lastName == null) {
 			if (other.lastName != null)
@@ -179,7 +174,7 @@ public class User implements Serializable{
 
 	@Override
 	public String toString() {
-		return "User [idUser=" + idUser + ", username=" + username + ", firstName=" + firstName + ", lastName=" + lastName + ", password=" + password + ", email=" + email + ", role=" + role + "]";
+		return "User [userId=" + userId + ", username=" + username + ", firstName=" + firstName + ", lastName=" + lastName + ", password=" + password + ", email=" + email + ", role=" + role + "]";
 	}
 	
 }

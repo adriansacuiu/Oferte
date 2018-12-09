@@ -15,7 +15,6 @@ public class UserDao extends SessionController {
 	private static final Logger logger = Logger.getLogger(UserDao.class);
 
 	public boolean addUser(User user) throws Exception {
-		logger.info("Inside addUser method.");
 		boolean result = false;
 
 		try {
@@ -32,7 +31,6 @@ public class UserDao extends SessionController {
 	}
 
 	public boolean updateUser(User user) throws Exception {
-		logger.info("Inside updateUser method.");
 		boolean result = false;
 
 		try {
@@ -49,7 +47,6 @@ public class UserDao extends SessionController {
 	}
 
 	public boolean deleteUser(User user) throws Exception {
-		logger.info("Inside deleteUser method.");
 		boolean result = false;
 
 		try {
@@ -66,7 +63,6 @@ public class UserDao extends SessionController {
 
 	@SuppressWarnings("unchecked")
 	public List<User> getAllUsers() throws Exception {
-		logger.info("Inside getAllUsers method.");
 		List<User> users = null;
 
 		try {
@@ -83,7 +79,6 @@ public class UserDao extends SessionController {
 	}
 
 	public User getUserById(Long id) throws Exception {
-		logger.info("Inside getUserById method.");
 		User user = null;
 
 		try {
@@ -99,7 +94,6 @@ public class UserDao extends SessionController {
 	}
 
 	public User getUserByUsername(String username) throws Exception {
-		logger.info("Inside getUserByUsername method.");
 		User user = null;
 
 		try {
@@ -119,7 +113,6 @@ public class UserDao extends SessionController {
 
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByFirstName(String firstName) throws Exception {
-		logger.info("Inside getUsersByFirstName method.");
 		List<User> users = null;
 
 		try {
@@ -139,7 +132,6 @@ public class UserDao extends SessionController {
 
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByLastName(String lastName) throws Exception {
-		logger.info("Inside getUsersByLastName method.");
 		List<User> users = null;
 
 		try {
@@ -157,28 +149,7 @@ public class UserDao extends SessionController {
 		return users;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<User> getUsersByPassword(String password) throws Exception {
-		logger.info("Inside getUsersByPassword method.");
-		List<User> users = null;
-
-		try {
-			Query query = getCurrentSession().getNamedQuery("getUsersByPassword");
-			query.setParameter("password", password);
-
-			users = (List<User>) query.list();
-
-		} catch (Exception e) {
-			logger.error("in getUsersByPassword method Exception: " + e.getMessage() + "; Cause: " + e.getCause());
-			e.printStackTrace();
-			throw e;
-		}
-
-		return users;
-	}
-
 	public User getUserByEmail(String email) throws Exception {
-		logger.info("Inside getUserByEmail method.");
 		User user = null;
 
 		try {
@@ -198,7 +169,6 @@ public class UserDao extends SessionController {
 
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByRole(String role) throws Exception {
-		logger.info("Inside getUsersByRole method.");
 		List<User> users = null;
 
 		try {
@@ -215,25 +185,4 @@ public class UserDao extends SessionController {
 
 		return users;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public List<User> getUserByDepartment(Long idDepartment) throws Exception {
-		logger.info("Inside getUserByDepartment method.");
-		List<User> users = null;
-
-		try {
-			Query query = getCurrentSession().getNamedQuery("getUserByDepartment");
-			query.setParameter("idDepartment", idDepartment);
-
-			users = (List<User>) query.list();
-
-		} catch (Exception e) {
-			logger.error("in getUserByDepartment method Exception: " + e.getMessage() + "; Cause: " + e.getCause());
-			e.printStackTrace();
-			throw e;
-		}
-
-		return users;
-	}
-
 }
