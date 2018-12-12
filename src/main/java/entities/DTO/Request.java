@@ -15,17 +15,19 @@ public class Request implements Serializable {
 	private Quote quote;
 	private long userId;
 	private Car car;
+	private RequestType requestType;
 	private List<Product> products;
 	
 	public Request() {
 	}
 	
-	public Request(Client client, Quote quote, long userId, Car car, List<Product> products) {
+	public Request(Client client, Quote quote, long userId, Car car, RequestType requestType, List<Product> products) {
 		super();
 		this.client = client;
 		this.quote = quote;
 		this.userId = userId;
 		this.car = car;
+		this.requestType = requestType;
 		this.products = products;
 	}
 
@@ -61,6 +63,14 @@ public class Request implements Serializable {
 		this.car = car;
 	}
 
+	public RequestType getRequestType() {
+		return requestType;
+	}
+
+	public void setRequestType(RequestType requestType) {
+		this.requestType = requestType;
+	}
+
 	public List<Product> getProducts() {
 		return products;
 	}
@@ -77,6 +87,7 @@ public class Request implements Serializable {
 		result = prime * result + ((client == null) ? 0 : client.hashCode());
 		result = prime * result + ((products == null) ? 0 : products.hashCode());
 		result = prime * result + ((quote == null) ? 0 : quote.hashCode());
+		result = prime * result + ((requestType == null) ? 0 : requestType.hashCode());
 		result = prime * result + (int) (userId ^ (userId >>> 32));
 		return result;
 	}
@@ -110,6 +121,8 @@ public class Request implements Serializable {
 				return false;
 		} else if (!quote.equals(other.quote))
 			return false;
+		if (requestType != other.requestType)
+			return false;
 		if (userId != other.userId)
 			return false;
 		return true;
@@ -117,6 +130,6 @@ public class Request implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Request [client=" + client + ", quote=" + quote + ", userId=" + userId + ", car=" + car + ", products=" + products + "]";
+		return "Request [client=" + client + ", quote=" + quote + ", userId=" + userId + ", car=" + car + ", requestType=" + requestType + ", products=" + products + "]";
 	}
 }
