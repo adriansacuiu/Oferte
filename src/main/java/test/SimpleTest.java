@@ -10,16 +10,18 @@ import entities.Client;
 import entities.DTO.Request;
 import entities.DTO.RequestType;
 import services.ppt.PPTProcessor;
+import util.DataAppenderUtils;
 
 
 public class SimpleTest {
 
 	public static void main(String[] args) throws Exception {
 		test();
+		
 	}
 
 	private static void test() throws Exception {
-		String outputFileName = "target/ppt/output/output home line.pptx";
+		String outputFileName = "target/ppt/output/output home line3.pptx";
 		
         PPTProcessor dataAppender = new PPTProcessor(outputFileName); 
         Client client = new Client("Siemens SRL", "Andrei", "Gheorge", "+40 754 432 245", "andreigheorghe@yahoo.com", "");
@@ -29,7 +31,11 @@ public class SimpleTest {
         chargeRates.add(new ChargeRate(7.2));
         car.setChargeRates(chargeRates);
         
-        Request request = new Request(client, null, 0, car, RequestType.HOMELINE, null);
+        List<String> productIds = new ArrayList<String>();
+		productIds.add("B1322-5001");
+		productIds.add("B3320-00292");
+        
+        Request request = new Request(client, null, 0, car, RequestType.HOMELINE, productIds);
         
         dataAppender.processPPT(request);
 	}
@@ -48,5 +54,17 @@ public class SimpleTest {
 	    else {
 			System.out.println("Not found.");
 		}
+	}
+	
+	public static void removeIfTest()
+	{
+		List<String> productIds = new ArrayList<String>();
+		productIds.add("B1322-5001");
+		productIds.add("B3320-00292");
+		
+		List<String> productIds2 = DataAppenderUtils.removeStationsWithCableConnector(productIds);
+		
+		System.out.println(productIds.size());
+		System.out.println(productIds2.size());
 	}
 }

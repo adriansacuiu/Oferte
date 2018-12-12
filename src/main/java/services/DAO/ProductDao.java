@@ -75,7 +75,7 @@ public class ProductDao extends SessionController {
 		return products;
 	}
 
-	public Product getProductById(Long id) throws Exception {
+	public Product getProductById(String id) throws Exception {
 		Product product = null;
 
 		try {

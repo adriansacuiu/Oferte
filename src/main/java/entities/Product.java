@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
@@ -17,9 +15,11 @@ import org.hibernate.annotations.NamedQuery;
 @Entity
 @NamedQueries({
 	@NamedQuery(name="getAllProducts", query="FROM Product p ORDER BY p.productId"),
-	@NamedQuery(name="getProductsByType", query="FROM Product p WHERE p.type = :type"),
-	@NamedQuery(name="getProductsByName", query="FROM Product p WHERE p.name = :name"),
-	@NamedQuery(name="getProductsByDescription", query="FROM Product p WHERE p.description = :description"),
+	@NamedQuery(name="getProductsByModel", query="FROM Product p WHERE p.model = :model"),
+	@NamedQuery(name="getProductsByModelType", query="FROM Product p WHERE p.modelType = :modelType"),
+	@NamedQuery(name="getProductsByPower", query="FROM Product p WHERE p.power = :power"),
+	@NamedQuery(name="getProductsByNumberOfConnectors", query="FROM Product p WHERE p.numberOfConnectors = :numberOfConnectors"),
+	@NamedQuery(name="getProductsByConnectorType", query="FROM Product p WHERE p.connectorType = :connectorType"),
 	@NamedQuery(name="getProductsByPrice", query="FROM Product p WHERE p.price = :price"),
 	@NamedQuery(name="getProductsByPrice2", query="FROM Product p WHERE p.price2 = :price2")
 })
@@ -28,10 +28,12 @@ public class Product implements Serializable {
 	
 	private static final long serialVersionUID = 8679802599881027433L;
 	
-	private long productId;
-	private String type;
-	private String name;
-	private String description;
+	private String productId;
+	private String model;
+	private String modelType;
+	private double power;
+	private int numberOfConnectors;
+	private String connectorType;
 	private int price;
 	private int price2;
 	private List<Quote> quotes;
@@ -39,50 +41,71 @@ public class Product implements Serializable {
 	public Product() {
 	}
 
-	public Product(String type, String name, String description, int price, int price2) {
-		this.type = type;
-		this.name = name;
-		this.description = description;
+	public Product(String productId, String model, String modelType, double power, int numberOfConnectors, String connectorType, int price, int price2, List<Quote> quotes) {
+		this.productId = productId;
+		this.model = model;
+		this.modelType = modelType;
+		this.power = power;
+		this.numberOfConnectors = numberOfConnectors;
+		this.connectorType = connectorType;
 		this.price = price;
 		this.price2 = price2;
+		this.quotes = quotes;
 	}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID_PRODUCT")
-	public long getProductId() {
+	public String getProductId() {
 		return productId;
 	}
 
-	public void setProductId(long productId) {
+	public void setProductId(String productId) {
 		this.productId = productId;
 	}
 
-	@Column(name = "TYPE")
-	public String getType() {
-		return type;
+	@Column(name = "MODEL")
+	public String getModel() {
+		return model;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setModel(String model) {
+		this.model = model;
 	}
 
-	@Column(name = "NAME")
-	public String getName() {
-		return name;
+	@Column(name = "MODEL_TYPE")
+	public String getModelType() {
+		return modelType;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setModelType(String modelType) {
+		this.modelType = modelType;
 	}
 
-	@Column(name = "DESCRIPTION")
-	public String getDescription() {
-		return description;
+	@Column(name = "POWER")
+	public double getPower() {
+		return power;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setPower(double power) {
+		this.power = power;
+	}
+
+	@Column(name = "NUMBER_OF_CONNECTORS")
+	public int getNumberOfConnectors() {
+		return numberOfConnectors;
+	}
+
+	public void setNumberOfConnectors(int numberOfConnectors) {
+		this.numberOfConnectors = numberOfConnectors;
+	}
+
+	@Column(name = "CONNECTOR_TYPE")
+	public String getConnectorType() {
+		return connectorType;
+	}
+
+	public void setConnectorType(String connectorType) {
+		this.connectorType = connectorType;
 	}
 
 	@Column(name = "PRICE")
@@ -102,7 +125,7 @@ public class Product implements Serializable {
 	public void setPrice2(int price2) {
 		this.price2 = price2;
 	}
-	
+
 	@ManyToMany(mappedBy = "products")
 	public List<Quote> getQuotes() {
 		return quotes;
@@ -116,12 +139,17 @@ public class Product implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((connectorType == null) ? 0 : connectorType.hashCode());
+		result = prime * result + ((model == null) ? 0 : model.hashCode());
+		result = prime * result + ((modelType == null) ? 0 : modelType.hashCode());
+		result = prime * result + numberOfConnectors;
+		long temp;
+		temp = Double.doubleToLongBits(power);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + price;
 		result = prime * result + price2;
-		result = prime * result + (int) (productId ^ (productId >>> 32));
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((productId == null) ? 0 : productId.hashCode());
+		result = prime * result + ((quotes == null) ? 0 : quotes.hashCode());
 		return result;
 	}
 
@@ -134,32 +162,45 @@ public class Product implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Product other = (Product) obj;
-		if (description == null) {
-			if (other.description != null)
+		if (connectorType == null) {
+			if (other.connectorType != null)
 				return false;
-		} else if (!description.equals(other.description))
+		} else if (!connectorType.equals(other.connectorType))
 			return false;
-		if (name == null) {
-			if (other.name != null)
+		if (model == null) {
+			if (other.model != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!model.equals(other.model))
+			return false;
+		if (modelType == null) {
+			if (other.modelType != null)
+				return false;
+		} else if (!modelType.equals(other.modelType))
+			return false;
+		if (numberOfConnectors != other.numberOfConnectors)
+			return false;
+		if (Double.doubleToLongBits(power) != Double.doubleToLongBits(other.power))
 			return false;
 		if (price != other.price)
 			return false;
 		if (price2 != other.price2)
 			return false;
-		if (productId != other.productId)
-			return false;
-		if (type == null) {
-			if (other.type != null)
+		if (productId == null) {
+			if (other.productId != null)
 				return false;
-		} else if (!type.equals(other.type))
+		} else if (!productId.equals(other.productId))
+			return false;
+		if (quotes == null) {
+			if (other.quotes != null)
+				return false;
+		} else if (!quotes.equals(other.quotes))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Product [productId=" + productId + ", type=" + type + ", name=" + name + ", description=" + description + ", price=" + price + ", price2=" + price2 + "]";
+		return "Product [productId=" + productId + ", model=" + model + ", modelType=" + modelType + ", power=" + power + ", numberOfConnectors=" + numberOfConnectors + ", connectorType="
+				+ connectorType + ", price=" + price + ", price2=" + price2 + ", quotes=" + quotes + "]";
 	}
 }

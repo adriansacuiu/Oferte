@@ -5,7 +5,6 @@ import java.util.List;
 
 import entities.Car;
 import entities.Client;
-import entities.Product;
 import entities.Quote;
 
 public class Request implements Serializable {
@@ -16,19 +15,19 @@ public class Request implements Serializable {
 	private long userId;
 	private Car car;
 	private RequestType requestType;
-	private List<Product> products;
+	private List<String> productIds;
 	
 	public Request() {
 	}
 	
-	public Request(Client client, Quote quote, long userId, Car car, RequestType requestType, List<Product> products) {
+	public Request(Client client, Quote quote, long userId, Car car, RequestType requestType, List<String> productIds) {
 		super();
 		this.client = client;
 		this.quote = quote;
 		this.userId = userId;
 		this.car = car;
 		this.requestType = requestType;
-		this.products = products;
+		this.productIds = productIds;
 	}
 
 	public Client getClient() {
@@ -71,12 +70,12 @@ public class Request implements Serializable {
 		this.requestType = requestType;
 	}
 
-	public List<Product> getProducts() {
-		return products;
+	public List<String> getProducts() {
+		return productIds;
 	}
 
-	public void setProducts(List<Product> products) {
-		this.products = products;
+	public void setProducts(List<String> productIds) {
+		this.productIds = productIds;
 	}
 
 	@Override
@@ -85,7 +84,7 @@ public class Request implements Serializable {
 		int result = 1;
 		result = prime * result + ((car == null) ? 0 : car.hashCode());
 		result = prime * result + ((client == null) ? 0 : client.hashCode());
-		result = prime * result + ((products == null) ? 0 : products.hashCode());
+		result = prime * result + ((productIds == null) ? 0 : productIds.hashCode());
 		result = prime * result + ((quote == null) ? 0 : quote.hashCode());
 		result = prime * result + ((requestType == null) ? 0 : requestType.hashCode());
 		result = prime * result + (int) (userId ^ (userId >>> 32));
@@ -111,10 +110,10 @@ public class Request implements Serializable {
 				return false;
 		} else if (!client.equals(other.client))
 			return false;
-		if (products == null) {
-			if (other.products != null)
+		if (productIds == null) {
+			if (other.productIds != null)
 				return false;
-		} else if (!products.equals(other.products))
+		} else if (!productIds.equals(other.productIds))
 			return false;
 		if (quote == null) {
 			if (other.quote != null)
@@ -130,6 +129,6 @@ public class Request implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Request [client=" + client + ", quote=" + quote + ", userId=" + userId + ", car=" + car + ", requestType=" + requestType + ", products=" + products + "]";
+		return "Request [client=" + client + ", quote=" + quote + ", userId=" + userId + ", car=" + car + ", requestType=" + requestType + ", productIds=" + productIds + "]";
 	}
 }

@@ -8,10 +8,12 @@ import org.apache.poi.xddf.usermodel.text.XDDFTextParagraph;
 import org.apache.poi.xddf.usermodel.text.XDDFTextRun;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFShape;
+import org.apache.poi.xslf.usermodel.XSLFTable;
 import org.apache.poi.xslf.usermodel.XSLFTextShape;
 
 import entities.Car;
 import entities.Client;
+import entities.Product;
 import entities.DTO.Request;
 import services.ppt.appender.PPTDataAppender;
 import util.CarUtils;
@@ -31,8 +33,10 @@ public class HomeLineDataAppender implements PPTDataAppender {
 	
 	public void proccesPPTBody(Request request) throws Exception
 	{
-		processWelcomePage(request.getClient());
-		proccesChargingRecomandationsPage(request.getCar(), 2);
+		// MODIFICA
+		//processWelcomePage(request.getClient());
+		//proccesChargingRecomandationsPage(request.getCar(), 2);
+		proccesHomeLineWithSocketPage(request.getProducts(), 4);
 	}
 	
 	/**
@@ -103,5 +107,40 @@ public class HomeLineDataAppender implements PPTDataAppender {
 		}
 		
 		System.out.println("Charging recomandations page finished...");
+	}
+	
+	/**
+	 * Adds the products in the table.
+	 * 
+	 * @param productIds
+	 * @param pageNumber
+	 * 
+	 * @throws Exception
+	 */
+	public void proccesHomeLineWithSocketPage(List<String> productIds, int pageNumber) throws Exception
+	{
+		//productIds = DataAppenderUtils.removeStationsWithCableConnector(productIds);
+		
+		List<XSLFShape> shapes = ppt.getSlides().get(pageNumber).getShapes();
+		XSLFTable table = null;
+		
+		for(XSLFShape shape : shapes)
+		{
+			if(shape instanceof XSLFTable)
+			{
+				table = (XSLFTable)shape;
+				break;
+			}
+		}
+		
+		if(table == null)
+		{
+			throw new Exception("No table found");
+		}
+		
+		// MODIFICA
+		Product product = new Product("H3321-0020", "Home Line", "Autostart", 22, 1, "priză", 970, 0, null);
+		
+		DataAppenderUtils.addNewTableRow(table, product);
 	}
 }

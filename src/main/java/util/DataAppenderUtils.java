@@ -1,16 +1,27 @@
 package util;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.apache.poi.sl.usermodel.TableCell.BorderEdge;
+import org.apache.poi.sl.usermodel.TextParagraph.TextAlign;
+import org.apache.poi.sl.usermodel.VerticalAlignment;
 import org.apache.poi.xddf.usermodel.text.XDDFTextBody;
 import org.apache.poi.xddf.usermodel.text.XDDFTextParagraph;
 import org.apache.poi.xddf.usermodel.text.XDDFTextRun;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xslf.usermodel.XSLFTable;
+import org.apache.poi.xslf.usermodel.XSLFTableCell;
+import org.apache.poi.xslf.usermodel.XSLFTableRow;
+import org.apache.poi.xslf.usermodel.XSLFTextParagraph;
+import org.apache.poi.xslf.usermodel.XSLFTextRun;
 
+import entities.Product;
 import entities.DTO.RequestType;
 import services.ppt.appender.PPTDataAppender;
 import services.ppt.appender.impl.HomeLineDataAppender;
@@ -147,6 +158,221 @@ public class DataAppenderUtils {
 	    else 
 	    {
 	    	return null;
+		}
+	}
+	
+	/**
+	 * Remove the productsIds from the list the charging stations that have cable connector.
+	 * 
+	 * @param productIds
+	 * @return
+	 */
+	public static List<String> removeStationsWithCableConnector(List<String> productIds)
+	{
+		return productIds.stream()
+				.filter(productId -> hasCableConnector(productId))
+				.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Remove the productsIds from the list the charging stations that have socket connector.
+	 * 
+	 * @param productIds
+	 * @return
+	 */
+	public static List<String> removeStationsWithSocketConnector(List<String> productIds)
+	{
+		return productIds.stream()
+			.filter(productId -> !hasCableConnector(productId))
+			.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Check if the station with the given product is has cable connector or not.
+	 * 
+	 * @param productId
+	 * @return
+	 */
+	private static boolean hasCableConnector(String productId)
+	{
+		Pattern pattern = Pattern.compile("(?<=\\w-)+\\w+");
+	    Matcher matcher = pattern.matcher(productId);
+	    matcher.find();
+	    
+	    return matcher.group().length() == 5;
+	}
+	
+	/**
+	 * Adds a new row to the table that contains the products details.
+	 * 
+	 * @param table
+	 * @param product
+	 * @return
+	 */
+	public static XSLFTable addNewTableRow(XSLFTable table, Product product)
+	{
+		XSLFTableRow placeholderRow = table.getRows().get(1);
+		XSLFTableRow newRow = table.addRow();
+		newRow.setHeight(placeholderRow.getHeight());
+		
+		XSLFTableCell newCell;
+		XSLFTableCell placeholderCell;
+		
+		for(int i = 0; i < placeholderRow.getCells().size(); i++)
+		{
+			placeholderCell = placeholderRow.getCells().get(i);
+			
+			newCell = newRow.addCell();
+			newCell.setFillColor(Color.WHITE);
+			newCell.setVerticalAlignment(VerticalAlignment.MIDDLE);
+			
+			setCellBorders(placeholderCell, newCell, i, placeholderRow.getCells().size());
+			appendCellTexts(newCell, placeholderCell, product);
+		}
+		
+		table.getCTTable().getTrList().remove(0);
+		
+		return table;
+	}
+
+	/**
+	 * Append the text for a cell in the row.
+	 * 
+	 * @param newCell
+	 * @param placeholderCell
+	 * @param product
+	 */
+	private static void appendCellTexts(XSLFTableCell newCell, XSLFTableCell placeholderCell, Product product) {
+		XSLFTextParagraph newTextParagraph;
+		XSLFTextRun newTextRun;
+		for(XSLFTextParagraph placeholderParagraph : placeholderCell.getTextParagraphs())
+		{
+			newTextParagraph = newCell.addNewTextParagraph();
+			newTextParagraph.setTextAlign(TextAlign.CENTER);
+			
+			for(XSLFTextRun placeholderTextRun : placeholderParagraph.getTextRuns())
+			{
+				newTextRun = newTextParagraph.addNewTextRun();
+				appendCellText(placeholderTextRun, newTextRun, product);
+			}
+		}
+	}
+	
+	/**
+	 * Append the text in the textRun.
+	 * 
+	 * @param placeholderTextRun
+	 * @param newTextRun
+	 * @param product
+	 */
+	private static void appendCellText(XSLFTextRun placeholderTextRun, XSLFTextRun newTextRun, Product product)
+	{
+		StringBuffer sb;
+		String power;
+		
+		switch (ProductInfo.getProductInfo(placeholderTextRun.getRawText())) 
+		{
+			case CODE:
+				newTextRun.setText(product.getProductId());
+				break;
+			
+			case PRODUCT:
+				sb = new StringBuffer();
+				power = Power.getFormattedPowerString(product.getPower());
+				sb.append(product.getModel()).append(" ").append(product.getModelType()).append("\n")
+					.append(product.getNumberOfConnectors()).append(" x ").append(power).append(" kW");
+				newTextRun.setText(sb.toString());
+				break;	
+				
+			case INPUT:
+				sb = new StringBuffer();
+				power = Power.getFormattedPowerString(product.getPower());
+				
+				if(product.getNumberOfConnectors() == 1)
+				{
+					sb.append("1 cablu");
+				}
+				else 
+				{
+					sb.append("2 cabluri");
+				}
+				
+				sb.append("\n").append("x ").append(power).append(" kW").append("\n")
+					.append("(").append(Power.getPowerDetails(power)).append(")");
+				
+				newTextRun.setText(sb.toString());
+				break;
+				
+			case OUTPUT:
+				sb = new StringBuffer();
+				power = Power.getFormattedPowerString(product.getPower());
+				
+				if(product.getNumberOfConnectors() == 1)
+				{
+					if(product.getConnectorType() == "cablu")
+					{
+						sb.append("1 cablu");
+					} 
+					else 
+					{
+						sb.append("1 priză");
+					}
+						
+				}
+				else 
+				{
+					if(product.getConnectorType() == "cablu")
+					{
+						sb.append("2 cabluri");
+					} 
+					else 
+					{
+						sb.append("2 prize");
+					}
+				}
+				
+				sb.append(" Type 2").append("\n").append("x ").append(power).append(" kW").append("\n")
+					.append("(").append(Power.getPowerDetails(power)).append(")");
+				
+				newTextRun.setText(sb.toString());
+				break;
+				
+			case PRICE:
+				newTextRun.setText(product.getPrice() + " €");
+				break;
+				
+			default:
+				break;
+		}
+		
+		
+		newTextRun.setFontFamily(placeholderTextRun.getFontFamily());
+		newTextRun.setFontSize(placeholderTextRun.getFontSize());
+	}
+		
+	/**
+	 * Set up the borders for the new row.
+	 * 
+	 * @param placeholderCell
+	 * @param newCell
+	 * @param position
+	 * @param maxCells
+	 */
+	private static void setCellBorders(XSLFTableCell placeholderCell, XSLFTableCell newCell, int position, int maxCells)
+	{
+		newCell.setBorderColor(BorderEdge.top, placeholderCell.getBorderColor(BorderEdge.top));
+		newCell.setBorderStyle(BorderEdge.top, placeholderCell.getBorderStyle(BorderEdge.top));
+
+		if(position > 0)
+		{
+			newCell.setBorderColor(BorderEdge.left, placeholderCell.getBorderColor(BorderEdge.top));
+			newCell.setBorderStyle(BorderEdge.left, placeholderCell.getBorderStyle(BorderEdge.top));
+		}
+
+		if(position < maxCells - 1)
+		{
+			newCell.setBorderColor(BorderEdge.right, placeholderCell.getBorderColor(BorderEdge.top));
+			newCell.setBorderStyle(BorderEdge.right, placeholderCell.getBorderStyle(BorderEdge.top));
 		}
 	}
 }
